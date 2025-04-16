@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EmotionsAI - AI-Powered Personalized Bouquets</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #7d5ba6;
+        --primary-light: #9b7cb8;
+        --primary-dark: #5e3a8c;
+        --text: #333333;
+        --text-light: #666666;
+        --background: #ffffff;
+        --gray-light: #f5f5f5;
+        --gray: #e0e0e0;
+        --gray-dark: #cccccc;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header */
+      header {
+        background-color: var(--background);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        transition: all 0.3s ease;
+      }
+
+      header.scrolled {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+      }
+
+      .logo i {
+        margin-right: 10px;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-links li {
+        margin-left: 30px;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary);
+      }
+
+      .cta-button {
+        background-color: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .cta-button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(125, 91, 166, 0.3);
+      }
+
+      .mobile-menu {
+        display: none;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 150px 0 100px;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          rgba(245, 245, 245, 0.8) 0%,
+          rgba(255, 255, 255, 1) 100%
+        );
+      }
+
+      .hero h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: var(--primary);
+        animation: fadeInUp 1s ease;
+      }
+
+      .hero p {
+        font-size: 20px;
+        color: var(--text-light);
+        max-width: 700px;
+        margin: 0 auto 40px;
+        animation: fadeInUp 1s ease 0.2s forwards;
+        opacity: 0;
+      }
+
+      .hero-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        animation: fadeInUp 1s ease 0.4s forwards;
+        opacity: 0;
+      }
+
+      .secondary-button {
+        background-color: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        padding: 10px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .secondary-button:hover {
+        background-color: var(--primary-light);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      /* How It Works */
+      .section {
+        padding: 100px 0;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+        font-size: 36px;
+        color: var(--primary);
+      }
+
+      .how-it-works {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 30px;
+      }
+
+      .step {
+        flex: 1;
+        min-width: 250px;
+        background-color: var(--gray-light);
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        opacity: 0;
+        animation: fadeInUp 1s ease forwards;
+      }
+
+      .step:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .step:nth-child(1) {
+        animation-delay: 0.2s;
+      }
+
+      .step:nth-child(2) {
+        animation-delay: 0.4s;
+      }
+
+      .step:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      .step-icon {
+        font-size: 48px;
+        color: var(--primary);
+        margin-bottom: 20px;
+      }
+
+      .step h3 {
+        font-size: 22px;
+        margin-bottom: 15px;
+        color: var(--primary-dark);
+      }
+
+      /* Examples */
+      .examples {
+        background-color: var(--gray-light);
+      }
+
+      .example-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .example-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        opacity: 0;
+        animation: fadeIn 1s ease forwards;
+      }
+
+      .example-card:nth-child(1) {
+        animation-delay: 0.2s;
+      }
+
+      .example-card:nth-child(2) {
+        animation-delay: 0.4s;
+      }
+
+      .example-card:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      .example-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .example-image {
+        height: 250px;
+        background-size: cover;
+        background-position: center;
+      }
+
+      .example-info {
+        padding: 20px;
+      }
+
+      .example-info h3 {
+        margin-bottom: 10px;
+        color: var(--primary-dark);
+      }
+
+      /* Reviews */
+      .reviews {
+        text-align: center;
+      }
+
+      .review-slider {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .review {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin: 0 20px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        position: absolute;
+        width: calc(100% - 40px);
+        left: 0;
+        top: 0;
+      }
+
+      .review.active {
+        opacity: 1;
+        position: relative;
+      }
+
+      .review-text {
+        font-size: 18px;
+        font-style: italic;
+        margin-bottom: 20px;
+        color: var(--text-light);
+      }
+
+      .review-author {
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+
+      .review-dots {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        background-color: var(--gray-dark);
+        border-radius: 50%;
+        margin: 0 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .dot.active {
+        background-color: var(--primary);
+      }
+
+      /* CTA Section */
+      .cta-section {
+        background-color: var(--primary);
+        color: white;
+        text-align: center;
+        padding: 80px 0;
+        border-radius: 10px;
+        margin: 50px 0;
+      }
+
+      .cta-section h2 {
+        font-size: 36px;
+        margin-bottom: 20px;
+      }
+
+      .cta-section p {
+        font-size: 18px;
+        max-width: 700px;
+        margin: 0 auto 30px;
+      }
+
+      /* Footer */
+      footer {
+        background-color: var(--gray-light);
+        padding: 60px 0 20px;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+
+      .footer-column {
+        flex: 1;
+        min-width: 200px;
+        margin-bottom: 30px;
+      }
+
+      .footer-column h3 {
+        color: var(--primary-dark);
+        margin-bottom: 20px;
+        font-size: 18px;
+      }
+
+      .footer-links {
+        list-style: none;
+      }
+
+      .footer-links li {
+        margin-bottom: 10px;
+      }
+
+      .footer-links a {
+        text-decoration: none;
+        color: var(--text-light);
+        transition: color 0.3s ease;
+      }
+
+      .footer-links a:hover {
+        color: var(--primary);
+      }
+
+      .social-links {
+        display: flex;
+        gap: 15px;
+      }
+
+      .social-links a {
+        color: var(--text-light);
+        font-size: 20px;
+        transition: color 0.3s ease;
+      }
+
+      .social-links a:hover {
+        color: var(--primary);
+      }
+
+      .copyright {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid var(--gray);
+        color: var(--text-light);
+        font-size: 14px;
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+          position: absolute;
+          top: 80px;
+          left: 0;
+          width: 100%;
+          background-color: white;
+          flex-direction: column;
+          align-items: center;
+          padding: 20px 0;
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links.active {
+          display: flex;
+        }
+
+        .nav-links li {
+          margin: 10px 0;
+        }
+
+        .mobile-menu {
+          display: block;
+        }
+
+        .hero h1 {
+          font-size: 36px;
+        }
+
+        .hero p {
+          font-size: 18px;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .step {
+          min-width: 100%;
+          margin-bottom: 20px;
+        }
+
+        .section-title {
+          font-size: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header id="header">
+      <div class="container">
+        <nav>
+          <a href="#" class="logo"><i class="fas fa-spa"></i> EmotionsAI</a>
+          <ul class="nav-links" id="navLinks">
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li>
+              <a href="#cta" class="cta-button" style="color: white"
+                >Try Our Bot</a
+              >
+            </li>
+          </ul>
+          <div class="mobile-menu" id="mobileMenu">
+            <i class="fas fa-bars"></i>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>AI-Powered Personalized Bouquets</h1>
+        <p>
+          Create unique floral arrangements based on your photos and emotions.
+          Our AI crafts the perfect bouquet for every special moment in your
+          life.
+        </p>
+        <div class="hero-buttons">
+          <a href="#cta" class="cta-button">Try Our Telegram Bot</a>
+          <a href="#how-it-works" class="secondary-button">Learn More</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section" id="how-it-works">
+      <div class="container">
+        <h2 class="section-title">How EmotionsAI Works</h2>
+        <div class="how-it-works">
+          <div class="step">
+            <div class="step-icon">
+              <i class="fas fa-camera"></i>
+            </div>
+            <h3>Upload Your Photo</h3>
+            <p>
+              Share a special photo with us - it could be of a person, place, or
+              moment you want to celebrate.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-icon">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h3>AI Analyzes Emotions</h3>
+            <p>
+              Our advanced AI detects colors, emotions, and themes to design a
+              bouquet that perfectly matches.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-icon">
+              <i class="fas fa-gift"></i>
+            </div>
+            <h3>Receive Your Bouquet</h3>
+            <p>
+              We deliver your custom floral arrangement anywhere you need -
+              perfect for gifts or personal enjoyment.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Examples -->
+    <section class="section examples" id="examples">
+      <div class="container">
+        <h2 class="section-title">Example Creations</h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div
+              class="example-image"
+              style="
+                background-image: url('https://images.unsplash.com/photo-1526047932273-341f2a7631f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+              "
+            ></div>
+            <div class="example-info">
+              <h3>Romantic Anniversary</h3>
+              <p>
+                Soft pinks and whites with delicate roses, perfect for
+                celebrating love.
+              </p>
+            </div>
+          </div>
+          <div class="example-card">
+            <div
+              class="example-image"
+              style="
+                background-image: url('https://images.unsplash.com/photo-1519683109079-d5f539e1542f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+              "
+            ></div>
+            <div class="example-info">
+              <h3>Vibrant Birthday</h3>
+              <p>
+                Bright, cheerful colors with sunflowers and daisies to celebrate
+                life.
+              </p>
+            </div>
+          </div>
+          <div class="example-card">
+            <div
+              class="example-image"
+              style="
+                background-image: url('https://images.unsplash.com/photo-1518895949257-7621c3c786d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+              "
+            ></div>
+            <div class="example-info">
+              <h3>Elegant Sympathy</h3>
+              <p>
+                Subtle whites and greens with lilies for moments of remembrance.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="section reviews" id="reviews">
+      <div class="container">
+        <h2 class="section-title">What People Say</h2>
+        <div class="review-slider">
+          <div class="review active">
+            <p class="review-text">
+              "The bouquet EmotionsAI created from our wedding photo was
+              absolutely stunning. It captured the joy and elegance of our
+              special day perfectly!"
+            </p>
+            <p class="review-author">- Sarah & Michael, Newlyweds</p>
+          </div>
+          <div class="review">
+            <p class="review-text">
+              "I sent a picture of my mom's favorite vacation spot for her
+              birthday, and the bouquet brought tears to her eyes. So personal
+              and beautiful!"
+            </p>
+            <p class="review-author">- David, Son</p>
+          </div>
+          <div class="review">
+            <p class="review-text">
+              "As a busy professional, I love how quick and easy it is to create
+              meaningful gifts. The AI really understands what makes each
+              bouquet special."
+            </p>
+            <p class="review-author">- Jennifer, Marketing Director</p>
+          </div>
+        </div>
+        <div class="review-dots">
+          <div class="dot active" data-index="0"></div>
+          <div class="dot" data-index="1"></div>
+          <div class="dot" data-index="2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section" id="cta">
+      <div class="container">
+        <div class="cta-section">
+          <h2>Ready to Create Your Perfect Bouquet?</h2>
+          <p>
+            Try our Telegram bot now to experience the future of personalized
+            gifting. It's quick, easy, and magical!
+          </p>
+          <a
+            href="https://t.me/EmotionsAI_bot"
+            class="cta-button"
+            style="background-color: white; color: var(--primary)"
+            >Open Telegram Bot <i class="fab fa-telegram"></i
+          ></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>EmotionsAI</h3>
+            <p>
+              Combining emotional intelligence with artificial intelligence to
+              create perfect floral gifts for every occasion.
+            </p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-pinterest"></i></a>
+            </div>
+          </div>
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul class="footer-links">
+              <li><a href="#how-it-works">How It Works</a></li>
+              <li><a href="#examples">Examples</a></li>
+              <li><a href="#reviews">Reviews</a></li>
+              <li><a href="#cta">Telegram Bot</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Company</h3>
+            <ul class="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>Contact</h3>
+            <ul class="footer-links">
+              <li>
+                <a href="mailto:hello@emotionsai.com">hello@emotionsai.com</a>
+              </li>
+              <li><a href="tel:+1234567890">+1 (234) 567-890</a></li>
+              <li>123 Flower St, Tech City</li>
+            </ul>
+          </div>
+        </div>
+        <div class="copyright">
+          <p>&copy; 2023 EmotionsAI. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile Menu Toggle
+      const mobileMenu = document.getElementById("mobileMenu");
+      const navLinks = document.getElementById("navLinks");
+
+      mobileMenu.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+      });
+
+      // Header Scroll Effect
+      const header = document.getElementById("header");
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+          header.classList.add("scrolled");
+        } else {
+          header.classList.remove("scrolled");
+        }
+      });
+
+      // Review Slider
+      const reviews = document.querySelectorAll(".review");
+      const dots = document.querySelectorAll(".dot");
+      let currentReview = 0;
+
+      function showReview(index) {
+        reviews.forEach((review) => review.classList.remove("active"));
+        dots.forEach((dot) => dot.classList.remove("active"));
+
+        reviews[index].classList.add("active");
+        dots[index].classList.add("active");
+        currentReview = index;
+      }
+
+      dots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+          const index = parseInt(dot.getAttribute("data-index"));
+          showReview(index);
+        });
+      });
+
+      // Auto slide reviews
+      setInterval(() => {
+        currentReview = (currentReview + 1) % reviews.length;
+        showReview(currentReview);
+      }, 5000);
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          const targetId = this.getAttribute("href");
+          if (targetId === "#") return;
+
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: "smooth",
+            });
+
+            // Close mobile menu if open
+            navLinks.classList.remove("active");
+          }
+        });
+      });
+
+      // Animation on scroll
+      function animateOnScroll() {
+        const elements = document.querySelectorAll(".step, .example-card");
+
+        elements.forEach((element) => {
+          const elementPosition = element.getBoundingClientRect().top;
+          const screenPosition = window.innerHeight / 1.2;
+
+          if (elementPosition < screenPosition) {
+            element.style.animation = "fadeInUp 1s ease forwards";
+          }
+        });
+      }
+
+      window.addEventListener("scroll", animateOnScroll);
+      window.addEventListener("load", animateOnScroll);
+    </script>
+  </body>
+</html>
