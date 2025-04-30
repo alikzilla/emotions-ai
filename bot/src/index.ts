@@ -1,60 +1,37 @@
 import dotenv from "dotenv";
-import { Telegraf, Markup, Context } from "telegraf";
+import { Telegraf, Markup, session } from "telegraf";
 import { message } from "telegraf/filters";
+import { CustomContext, CustomSession, UserOrders } from "./types/types";
 import LocalSession from "telegraf-session-local";
 
 dotenv.config();
 
-// Define interfaces for our custom session and context
-interface Order {
-  id: string;
-  date: string;
-  status: string;
-  bouquet: string;
-}
-
-interface UserOrders {
-  [userId: number]: Order[];
-}
-
-interface CustomSession {
-  lastMessageId?: number;
-}
-
-interface CustomContext extends Context {
-  session: CustomSession;
-}
-
-// Initialize bot with custom context type
 const bot = new Telegraf<CustomContext>(process.env.TELEGRAM_BOT_TOKEN!);
 
-// Use local session middleware with proper typing
 const localSession = new LocalSession<CustomSession>({
-  database: "session_db.json",
+  database: "src/db/session_db.json",
 });
 bot.use(localSession.middleware());
 
-// Store user orders (in-memory for this example)
 const userOrders: UserOrders = {};
 
-// Helper function to update messages with proper typing
 async function updateMessage(
   ctx: CustomContext,
   text: string,
-  extra: Parameters<typeof ctx.reply>[1]
+  extra: Parameters<typeof ctx.reply>[1],
+  deletable: boolean = true
 ): Promise<void> {
   try {
-    if (ctx.session.lastMessageId) {
+    if (ctx.session.lastMessageId && deletable) {
       await ctx.deleteMessage(ctx.session.lastMessageId).catch(() => {});
     }
     const newMessage = await ctx.reply(text, extra);
-    ctx.session.lastMessageId = newMessage.message_id;
+    ctx.session.lastMessageId = deletable ? newMessage.message_id : undefined;
   } catch (error) {
     console.error("Error updating message:", error);
   }
 }
 
-// Start command handler
 bot.start(async (ctx) => {
   ctx.session ??= {};
   await updateMessage(
@@ -66,11 +43,11 @@ bot.start(async (ctx) => {
       [Markup.button.callback("🎀 Order a bouquet", "order")],
       [Markup.button.callback("📦 My orders", "orders")],
       [Markup.button.callback("ℹ️ Bot info", "info")],
-    ])
+    ]),
+    false
   );
 });
 
-// Order flow handler
 bot.action("order", async (ctx) => {
   await updateMessage(
     ctx,
@@ -82,11 +59,11 @@ bot.action("order", async (ctx) => {
       `- A landscape with colors you love`,
     Markup.inlineKeyboard([
       [Markup.button.callback("⬅️ Back to main menu", "back")],
-    ])
+    ]),
+    false
   );
 });
 
-// Photo handler
 bot.on(message("photo"), async (ctx) => {
   await updateMessage(
     ctx,
@@ -108,7 +85,6 @@ bot.on(message("photo"), async (ctx) => {
   );
 });
 
-// Checkout handler
 bot.action("checkout", async (ctx) => {
   if (!ctx.from) return;
 
@@ -142,7 +118,6 @@ bot.action("checkout", async (ctx) => {
   );
 });
 
-// Orders handler
 bot.action("orders", async (ctx) => {
   if (!ctx.from) return;
 
@@ -179,7 +154,6 @@ bot.action("orders", async (ctx) => {
   });
 });
 
-// Info handler
 bot.action("info", async (ctx) => {
   await updateMessage(
     ctx,
@@ -201,16 +175,12 @@ bot.action("info", async (ctx) => {
   );
 });
 
-// Back to main menu handler
 bot.action("back", async (ctx) => {
   await ctx.answerCbQuery();
-  await ctx.deleteMessage().catch(() => {});
-  ctx.session.lastMessageId = undefined;
+  ctx.session ??= {};
 
-  if (!ctx.chat) return;
-
-  const newMessage = await ctx.telegram.sendMessage(
-    ctx.chat.id,
+  await updateMessage(
+    ctx,
     `🌸 Welcome to EmotionsAI! 🌸\n\n` + `What would you like to do?`,
     Markup.inlineKeyboard([
       [Markup.button.callback("🎀 Order a bouquet", "order")],
@@ -218,22 +188,17 @@ bot.action("back", async (ctx) => {
       [Markup.button.callback("ℹ️ Bot info", "info")],
     ])
   );
-
-  ctx.session.lastMessageId = newMessage.message_id;
 });
 
-// Error handling
 bot.catch((err: unknown, ctx: CustomContext) => {
   const error = err as Error;
   console.error(`Error for ${ctx.updateType}:`, error);
   ctx.reply("An error occurred. Please try again later.");
 });
 
-// Start the bot
-bot.launch().then(() => {
-  console.log("EmotionsAI bot is running...");
-});
+console.log("EmotionsAI bot is running...");
 
-// Enable graceful stop
+bot.launch();
+
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
